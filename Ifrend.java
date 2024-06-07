@@ -97,6 +97,7 @@ class AddContactForm extends JFrame {
     private JTextField textSalary;
     private JTextField textBirthday;
     JTextField id;
+    private ContactHomeForm addcontactHomeform;
 
     public static String GenarateContactID(int count) {
         int[] temp = new int[4];
@@ -249,12 +250,26 @@ class AddContactForm extends JFrame {
 
         btnCancel = new JButton("Cancel");
         btnCancel.setFont(new Font("", 1, 20));
+        btnCancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                AddContactForm.this.dispose();
+            }
+        });
+
         btnPanel.add(btnCancel);
 
         JPanel backPannel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         btnBack = new JButton("Back   To   Home  Page");
         btnBack.setFont(new Font("", 1, 20));
+        btnBack.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evnt) {
+                if (addcontactHomeform == null) {
+                    addcontactHomeform = new ContactHomeForm();
+                }
+                addcontactHomeform.setVisible(true);
+            }
+        });
         backPannel.add(btnBack);
         btnPanel.add(backPannel);
 
@@ -371,19 +386,31 @@ class ViewContactForm extends JFrame {
 
         JPanel btnPannel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        backhome = new JButton("Back to Home");
+        backhome = new JButton("Reload");
         backhome.setFont(new Font("", 1, 20));
+        backhome.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                for (int i = 0; i < ContactHomeForm.contactList.size(); i++) {
+                    Contact contact = ContactHomeForm.contactList.get(i);
+                    Object[] datarow = { contact.getContactID(), contact.getName(), contact.getNumber(),
+                            contact.getCompany(), contact.getSalary(), contact.getBirthday() };
+                    dtm.addRow(datarow);
+                }
+            }
+        });
         btnPannel.add(backhome);
-
         add("South", btnPannel);
 
     }
+
 }
 
 class ContactHomeForm extends JFrame {
     static int count = 0;
     public static ArrayList<Contact> contactList = new ArrayList<>();
-
+    JLabel title1;
+    JLabel title2;
+    JLabel home;
     private AddContactForm addcontactform;
     private ViewContactForm viewcontactform;
 
@@ -399,16 +426,25 @@ class ContactHomeForm extends JFrame {
         setTitle("Contact management System");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+        setLayout(new GridLayout(1, 2));
 
-        JPanel btnPannel = new JPanel(new GridLayout(6, 1));
+        JPanel btnPannel = new JPanel(new GridLayout(7, 1, 10, 10));
+
+        JPanel homepage = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        home = new JLabel("Home page");
+        home.setFont(new Font("", 1, 30));
+        homepage.add(home);
+
+        btnPannel.add(homepage);
 
         btnAddContact = new JButton("Add New Contact");
         btnAddContact.setFont(new Font("", 1, 25));
         btnAddContact.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                if (addcontactform == null) {
-                    addcontactform = new AddContactForm(count++);
-                }
+                // if (addcontactform == null) {
+                addcontactform = new AddContactForm(count++);
+                // }
                 addcontactform.setVisible(true);
             }
         });
@@ -428,6 +464,12 @@ class ContactHomeForm extends JFrame {
 
         btnViewContact = new JButton("View Contact");
         btnViewContact.setFont(new Font("", 1, 25));
+        btnViewContact.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                viewcontactform = new ViewContactForm();
+                viewcontactform.setVisible(true);
+            }
+        });
         btnPannel.add(btnViewContact);
 
         JPanel exitPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -438,7 +480,41 @@ class ContactHomeForm extends JFrame {
 
         btnPannel.add(exitPanel);
 
-        add("Center", btnPannel);
+        JPanel imagepannel = new JPanel(new GridLayout(2, 1));
+
+        JPanel subimgpannel1 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        JPanel lbltitles = new JPanel(new GridLayout(2, 1));
+
+        JPanel title1Panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel title2panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        title1 = new JLabel("Ifrends");
+        title1.setFont(new Font("", 1, 30));
+        title1Panel.add(title1);
+
+        title2 = new JLabel("Contact Managment");
+        title2.setFont(new Font("", 1, 30));
+        title2panel.add(title2);
+
+        lbltitles.add(title1Panel);
+        lbltitles.add(title2panel);
+
+        subimgpannel1.add(lbltitles);
+        imagepannel.add(subimgpannel1);
+
+        JPanel photo = new JPanel(new FlowLayout());
+
+        JButton btnddd = new JButton("button");
+        photo.add(btnddd);
+
+        imagepannel.add(photo);
+
+        add(imagepannel);
+        add(btnPannel);
+
+        pack();
+
     }
 }
 
