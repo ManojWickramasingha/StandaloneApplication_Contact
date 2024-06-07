@@ -223,6 +223,11 @@ class AddContactForm extends JFrame {
                             if (validateBDay(birthday)) {
                                 Contact contact = new Contact(Id, name, contactnumber, company, salary, birthday);
                                 ContactHomeForm.contactList.add(contact);
+
+                                JOptionPane.showMessageDialog(null, "Add new Contact SuccessFully",
+                                        "Success...",
+                                        JOptionPane.INFORMATION_MESSAGE);
+
                             } else {
                                 JOptionPane.showMessageDialog(null, "Not a Validate Birthday",
                                         "agin added the new Birthday",
@@ -351,6 +356,7 @@ class AddContactForm extends JFrame {
         // lblandtextPannel.add(textPannel);
 
         add("Center", textPannel);
+        pack();
 
     }
 }
@@ -405,6 +411,149 @@ class ViewContactForm extends JFrame {
 
 }
 
+class SearchContactForm extends JFrame {
+
+    private JLabel lblTitle;
+
+    private JLabel lblContactID;
+    private JLabel lblName;
+    private JLabel lblContactNumber;
+    private JLabel lblCompany;
+    private JLabel lblSalary;
+    private JLabel lblBirthday;
+
+    private JTextField textSearch;
+    private JButton Search;
+    private JButton backtohome;
+
+    private ContactHomeForm contacthomeform;
+
+    private String ContactID;
+    private String Name;
+    private String ContactNumber;
+    private String Company;
+    private double Salary;
+    private String Birthday;
+
+    public static Contact[] Search(String textValue) {
+        Contact[] contactArr = new Contact[0];
+
+        for (int i = 0; i < ContactHomeForm.contactList.size(); i++) {
+            if (textValue.equals(ContactHomeForm.contactList.get(i).getBirthday())
+                    || textValue.equals(ContactHomeForm.contactList.get(i).getNumber())) {
+
+                Contact[] temp = new Contact[contactArr.length + 1];
+                // ---copy data-----
+                for (int a = 0; a < contactArr.length; a++) {
+                    temp[a] = contactArr[a];
+                }
+                contactArr = temp;
+                contactArr[contactArr.length - 1] = ContactHomeForm.contactList.get(i);
+            }
+        }
+        return contactArr;
+    }
+
+    SearchContactForm() {
+        setSize(800, 600);
+        setTitle("Search Contact Form");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        JPanel titlepannel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        lblTitle = new JLabel("SEARCH CONTACT");
+        lblTitle.setFont(new Font("", 1, 30));
+        titlepannel.add(lblTitle);
+
+        add("North", titlepannel);
+
+        JPanel main = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        JPanel maingrid = new JPanel(new GridLayout(1, 1));
+
+        JPanel searchpannel = new JPanel(new FlowLayout());
+
+        textSearch = new JTextField(20);
+        textSearch.setFont(new Font("", 1, 20));
+        searchpannel.add(textSearch);
+
+        Search = new JButton("Search");
+        Search.setFont(new Font("", 1, 20));
+        Search.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                String textValue = textSearch.getText();
+                Contact[] arr = Search(textValue);
+                for (int i = 0; i < arr.length; i++) {
+                    ContactID = arr[i].getContactID();
+
+                    Name = arr[i].getName();
+                    ContactNumber = arr[i].getNumber();
+                    Company = arr[i].getBirthday();
+                    Salary = arr[i].getSalary();
+                    Birthday = arr[i].getBirthday();
+                }
+
+            }
+        });
+        searchpannel.add(Search);
+
+        // maingrid.add(searchpannel);
+
+        JPanel detailsmain = new JPanel(new GridLayout(7, 1, 10, 10));
+
+        detailsmain.add(searchpannel);
+        lblContactID = new JLabel(ContactID);
+        lblContactID.setFont(new Font("", 1, 20));
+        detailsmain.add(lblContactID);
+
+        lblName = new JLabel(Name);
+        lblName.setFont(new Font("", 1, 20));
+        detailsmain.add(lblName);
+
+        lblContactNumber = new JLabel(ContactNumber);
+        lblContactNumber.setFont(new Font("", 1, 20));
+        detailsmain.add(lblContactNumber);
+
+        lblCompany = new JLabel(Company);
+        lblCompany.setFont(new Font("", 1, 20));
+        detailsmain.add(lblCompany);
+
+        lblSalary = new JLabel("" + Salary);
+        lblSalary.setFont(new Font("", 1, 20));
+        detailsmain.add(lblSalary);
+
+        lblBirthday = new JLabel(Birthday);
+        lblBirthday.setFont(new Font("", 1, 20));
+        detailsmain.add(lblBirthday);
+
+        JPanel btnpanner = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        backtohome = new JButton("Back To Home Page");
+        backtohome.setFont(new Font("", 1, 20));
+        backtohome.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (contacthomeform == null) {
+                    contacthomeform = new ContactHomeForm();
+                }
+                contacthomeform.setVisible(true);
+            }
+        });
+        btnpanner.add(backtohome);
+
+        // detailsmain.add(btnpanner);
+
+        maingrid.add(detailsmain);
+
+        main.add(maingrid);
+
+        add("Center", main);
+        add("South", btnpanner);
+        // pack();
+
+    }
+}
+
 class ContactHomeForm extends JFrame {
     static int count = 0;
     public static ArrayList<Contact> contactList = new ArrayList<>();
@@ -413,6 +562,7 @@ class ContactHomeForm extends JFrame {
     JLabel home;
     private AddContactForm addcontactform;
     private ViewContactForm viewcontactform;
+    private SearchContactForm searchcontactform;
 
     private JButton btnAddContact;
     private JButton btnUpdateContact;
@@ -456,6 +606,14 @@ class ContactHomeForm extends JFrame {
 
         btnSearchContact = new JButton("Search Contact");
         btnSearchContact.setFont(new Font("", 1, 25));
+        btnSearchContact.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evn) {
+                if (searchcontactform == null) {
+                    searchcontactform = new SearchContactForm();
+                }
+                searchcontactform.setVisible(true);
+            }
+        });
         btnPannel.add(btnSearchContact);
 
         btnDeleteContact = new JButton("Delete Contact");
@@ -466,7 +624,10 @@ class ContactHomeForm extends JFrame {
         btnViewContact.setFont(new Font("", 1, 25));
         btnViewContact.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                viewcontactform = new ViewContactForm();
+                if (viewcontactform == null) {
+                    viewcontactform = new ViewContactForm();
+                }
+
                 viewcontactform.setVisible(true);
             }
         });
@@ -523,5 +684,6 @@ class Ifrend {
         // new AddContactForm().setVisible(true);
         // new ViewContactForm().setVisible(true);
         new ContactHomeForm().setVisible(true);
+        // new SearchContactForm().setVisible(true);
     }
 }
