@@ -123,11 +123,11 @@ class AddContactForm extends JFrame {
     }
 
     public static boolean isduplicate(String ID) {
-
-        int length = ContactHomeForm.contactList.size();
+        ArrayList<Contact> contactList = ContactDBConnection.Instance().getContactList();
+        int length = contactList.size();
         for (int i = 0; i < length; i++) {
-            if (ID.equals(ContactHomeForm.contactList.get(i).getContactID())
-                    || ID.equals(ContactHomeForm.contactList.get(i).getContactID())) {
+            if (ID.equals(contactList.get(i).getContactID())
+                    || ID.equals(contactList.get(i).getContactID())) {
                 return true;
             }
         }
@@ -210,6 +210,8 @@ class AddContactForm extends JFrame {
         btnAdd = new JButton("ADD Contact");
         btnAdd.setFont(new Font("", 1, 20));
         btnAdd.addActionListener(new ActionListener() {
+            ArrayList<Contact> contactList = ContactDBConnection.Instance().getContactList();
+
             public void actionPerformed(ActionEvent evt) {
                 String Id = id.getText();
                 String name = textName.getText();
@@ -222,7 +224,7 @@ class AddContactForm extends JFrame {
                             String birthday = textBirthday.getText();
                             if (validateBDay(birthday)) {
                                 Contact contact = new Contact(Id, name, contactnumber, company, salary, birthday);
-                                ContactHomeForm.contactList.add(contact);
+                                ContactControler.addContact(contact);
 
                                 JOptionPane.showMessageDialog(null, "Add new Contact SuccessFully",
                                         "Success...",
@@ -361,7 +363,7 @@ class AddContactForm extends JFrame {
     }
 }
 
-class ViewContactForm extends JFrame {
+class ViewContactNameForm extends JFrame {
     private JTable ContactTable;
     private DefaultTableModel dtm;
 
@@ -369,7 +371,7 @@ class ViewContactForm extends JFrame {
 
     private JButton backhome;
 
-    ViewContactForm() {
+    ViewContactNameForm() {
         setSize(400, 300);
         setTitle("View Contact");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -395,9 +397,121 @@ class ViewContactForm extends JFrame {
         backhome = new JButton("Reload");
         backhome.setFont(new Font("", 1, 20));
         backhome.addActionListener(new ActionListener() {
+            // ArrayList<Contact> contactList =
+            // ContactDBConnection.Instance().getContactList();
+            ArrayList<Contact> contactList = ContactControler.sortName();
+
             public void actionPerformed(ActionEvent evt) {
-                for (int i = 0; i < ContactHomeForm.contactList.size(); i++) {
-                    Contact contact = ContactHomeForm.contactList.get(i);
+                for (int i = 0; i < contactList.size(); i++) {
+                    Contact contact = contactList.get(i);
+                    Object[] datarow = { contact.getContactID(), contact.getName(), contact.getNumber(),
+                            contact.getCompany(), contact.getSalary(), contact.getBirthday() };
+                    dtm.addRow(datarow);
+                }
+            }
+        });
+        btnPannel.add(backhome);
+        add("South", btnPannel);
+
+    }
+
+}
+
+class ViewContactBdayForm extends JFrame {
+    private JTable ContactTable;
+    private DefaultTableModel dtm;
+
+    private JLabel tiLabel;
+
+    private JButton backhome;
+
+    ViewContactBdayForm() {
+        setSize(400, 300);
+        setTitle("View Contact");
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        tiLabel = new JLabel("List Contact By BDay");
+        tiLabel.setHorizontalAlignment(JLabel.CENTER);
+        tiLabel.setFont(new Font("", 1, 30));
+
+        add("North", tiLabel);
+
+        String[] columnName = { "Contact ID", "Name", "Contact Number", "Company", "Salary", "Birthday" };
+        dtm = new DefaultTableModel(columnName, 0);
+
+        ContactTable = new JTable(dtm);
+
+        JScrollPane tablepane = new JScrollPane(ContactTable);
+
+        add("Center", tablepane);
+
+        JPanel btnPannel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        backhome = new JButton("Reload");
+        backhome.setFont(new Font("", 1, 20));
+        backhome.addActionListener(new ActionListener() {
+            // ArrayList<Contact> contactList =
+            // ContactDBConnection.Instance().getContactList();
+            ArrayList<Contact> contactList = ContactControler.sortBday();
+
+            public void actionPerformed(ActionEvent evt) {
+                for (int i = 0; i < contactList.size(); i++) {
+                    Contact contact = contactList.get(i);
+                    Object[] datarow = { contact.getContactID(), contact.getName(), contact.getNumber(),
+                            contact.getCompany(), contact.getSalary(), contact.getBirthday() };
+                    dtm.addRow(datarow);
+                }
+            }
+        });
+        btnPannel.add(backhome);
+        add("South", btnPannel);
+
+    }
+
+}
+
+class ViewContactSalaryForm extends JFrame {
+    private JTable ContactTable;
+    private DefaultTableModel dtm;
+
+    private JLabel tiLabel;
+
+    private JButton backhome;
+
+    ViewContactSalaryForm() {
+        setSize(400, 300);
+        setTitle("View Contact");
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        tiLabel = new JLabel("List Contact By Salary");
+        tiLabel.setHorizontalAlignment(JLabel.CENTER);
+        tiLabel.setFont(new Font("", 1, 30));
+
+        add("North", tiLabel);
+
+        String[] columnName = { "Contact ID", "Name", "Contact Number", "Company", "Salary", "Birthday" };
+        dtm = new DefaultTableModel(columnName, 0);
+
+        ContactTable = new JTable(dtm);
+
+        JScrollPane tablepane = new JScrollPane(ContactTable);
+
+        add("Center", tablepane);
+
+        JPanel btnPannel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        backhome = new JButton("Reload");
+        backhome.setFont(new Font("", 1, 20));
+        backhome.addActionListener(new ActionListener() {
+            // ArrayList<Contact> contactList =
+            // ContactDBConnection.Instance().getContactList();
+            ArrayList<Contact> contactList = ContactControler.sortSalary();
+
+            public void actionPerformed(ActionEvent evt) {
+                for (int i = 0; i < contactList.size(); i++) {
+                    Contact contact = contactList.get(i);
                     Object[] datarow = { contact.getContactID(), contact.getName(), contact.getNumber(),
                             contact.getCompany(), contact.getSalary(), contact.getBirthday() };
                     dtm.addRow(datarow);
@@ -425,6 +539,7 @@ class SearchContactForm extends JFrame {
     private JTextField textSearch;
     private JButton Search;
     private JButton backtohome;
+    private JButton Next;
 
     private ContactHomeForm contacthomeform;
 
@@ -434,25 +549,16 @@ class SearchContactForm extends JFrame {
     private String Company;
     private double Salary;
     private String Birthday;
+    private JLabel s;
 
-    public static Contact[] Search(String textValue) {
-        Contact[] contactArr = new Contact[0];
+    JPanel detailsmain;
 
-        for (int i = 0; i < ContactHomeForm.contactList.size(); i++) {
-            if (textValue.equals(ContactHomeForm.contactList.get(i).getBirthday())
-                    || textValue.equals(ContactHomeForm.contactList.get(i).getNumber())) {
+    // private Contact arr;
 
-                Contact[] temp = new Contact[contactArr.length + 1];
-                // ---copy data-----
-                for (int a = 0; a < contactArr.length; a++) {
-                    temp[a] = contactArr[a];
-                }
-                contactArr = temp;
-                contactArr[contactArr.length - 1] = ContactHomeForm.contactList.get(i);
-            }
-        }
-        return contactArr;
-    }
+    // public static Contact Search(String textValue) {
+
+    // return null;
+    // }
 
     SearchContactForm() {
         setSize(800, 600);
@@ -478,52 +584,87 @@ class SearchContactForm extends JFrame {
         textSearch.setFont(new Font("", 1, 20));
         searchpannel.add(textSearch);
 
+        Next = new JButton("Next");
+        Next.setFont(new Font("", 1, 20));
+
         Search = new JButton("Search");
         Search.setFont(new Font("", 1, 20));
         Search.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                String textValue = textSearch.getText();
-                Contact[] arr = Search(textValue);
-                for (int i = 0; i < arr.length; i++) {
-                    ContactID = arr[i].getContactID();
+                final String textValue = textSearch.getText();
+                Contact[] contactList = ContactControler.Search(textValue);
 
-                    Name = arr[i].getName();
-                    ContactNumber = arr[i].getNumber();
-                    Company = arr[i].getBirthday();
-                    Salary = arr[i].getSalary();
-                    Birthday = arr[i].getBirthday();
+                if (contactList.length == 1) {
+                    ContactID = contactList[0].getContactID();
+                    lblContactID.setText(ContactID);
+                    Name = contactList[0].getName();
+                    lblName.setText(Name);
+                    ContactNumber = contactList[0].getNumber();
+                    lblContactNumber.setText(ContactNumber);
+                    Company = contactList[0].getCompany();
+                    lblCompany.setText(Company);
+                    Salary = contactList[0].getSalary();
+                    lblSalary.setText("" + Salary);
+                    Birthday = contactList[0].getBirthday();
+                    lblBirthday.setText(Birthday);
+                } else {
+                    for (int i = 0; i < contactList.length; i++) {
+                        ContactID = contactList[i].getContactID();
+                        lblContactID.setText(ContactID);
+                        Name = contactList[i].getName();
+                        lblName.setText(Name);
+                        ContactNumber = contactList[i].getNumber();
+                        lblContactNumber.setText(ContactNumber);
+                        Company = contactList[i].getCompany();
+                        lblCompany.setText(Company);
+                        Salary = contactList[i].getSalary();
+                        lblSalary.setText("" + Salary);
+                        Birthday = contactList[i].getBirthday();
+                        lblBirthday.setText(Birthday);
+                        s = new JLabel("Not OK");
+                        Next.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent evt) {
+                                s.setText(ContactControler.ok());
+                            }
+                        });
+                        if (s.getText().equals("OK")) {
+                            // continue;
+                        } else {
+                            break;
+                        }
+                    }
                 }
 
             }
         });
         searchpannel.add(Search);
+        searchpannel.add(Next);
 
         // maingrid.add(searchpannel);
-
-        JPanel detailsmain = new JPanel(new GridLayout(7, 1, 10, 10));
+        detailsmain = new JPanel(new GridLayout(7, 1, 10, 10));
 
         detailsmain.add(searchpannel);
-        lblContactID = new JLabel(ContactID);
+        lblContactID = new JLabel("ContactId -> " + ContactID);
         lblContactID.setFont(new Font("", 1, 20));
         detailsmain.add(lblContactID);
 
-        lblName = new JLabel(Name);
+        lblName = new JLabel();
         lblName.setFont(new Font("", 1, 20));
         detailsmain.add(lblName);
 
-        lblContactNumber = new JLabel(ContactNumber);
+        lblContactNumber = new JLabel();
         lblContactNumber.setFont(new Font("", 1, 20));
         detailsmain.add(lblContactNumber);
 
-        lblCompany = new JLabel(Company);
+        lblCompany = new JLabel();
         lblCompany.setFont(new Font("", 1, 20));
         detailsmain.add(lblCompany);
 
-        lblSalary = new JLabel("" + Salary);
+        lblSalary = new JLabel();
         lblSalary.setFont(new Font("", 1, 20));
         detailsmain.add(lblSalary);
 
-        lblBirthday = new JLabel(Birthday);
+        lblBirthday = new JLabel();
         lblBirthday.setFont(new Font("", 1, 20));
         detailsmain.add(lblBirthday);
 
@@ -554,15 +695,763 @@ class SearchContactForm extends JFrame {
     }
 }
 
+class UpdateName extends JFrame {
+    private JLabel name;
+    private JTextField nametext;
+    private JButton update;
+    private JButton cancel;
+    private JLabel title;
+
+    UpdateName() {
+        setSize(100, 100);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        title = new JLabel("Update Name");
+        title.setFont(new Font("", 1, 20));
+        add("North", title);
+
+        JPanel textPannel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        name = new JLabel("Name");
+        name.setFont(new Font("", 1, 20));
+        textPannel.add(name);
+
+        nametext = new JTextField(10);
+        nametext.setFont(new Font("", 1, 20));
+        textPannel.add(nametext);
+
+        add("Center", textPannel);
+
+        JPanel btnpannel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        update = new JButton("Update");
+        update.setFont(new Font("", 1, 20));
+        update.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                final String newname = nametext.getText();
+                ContactControler.update(UpdateContactForm.contactList, newname, "name");
+                JOptionPane.showMessageDialog(null, "Name update SuccessFully",
+                        "Success...",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+            }
+        });
+        btnpannel.add(update);
+
+        cancel = new JButton("Cancel");
+        cancel.setFont(new Font("", 1, 20));
+        cancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                UpdateName.this.dispose();
+            }
+        });
+        btnpannel.add(cancel);
+
+        add("South", btnpannel);
+        pack();
+
+    }
+}
+
+class UpdateContactNumber extends JFrame {
+
+    private JLabel name;
+    private JTextField nametext;
+    private JButton update;
+    private JButton cancel;
+    private JLabel title;
+
+    UpdateContactNumber() {
+        setSize(100, 100);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        title = new JLabel("Update ContactNumber");
+        title.setFont(new Font("", 1, 20));
+        add("North", title);
+
+        JPanel textPannel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        name = new JLabel("ContactNumber");
+        name.setFont(new Font("", 1, 20));
+        textPannel.add(name);
+
+        nametext = new JTextField(10);
+        nametext.setFont(new Font("", 1, 20));
+        textPannel.add(nametext);
+
+        add("Center", textPannel);
+
+        JPanel btnpannel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        update = new JButton("Update");
+        update.setFont(new Font("", 1, 20));
+        update.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                final String newname = nametext.getText();
+                ContactControler.update(UpdateContactForm.contactList, newname, "number");
+                JOptionPane.showMessageDialog(null, "Update contact number SuccessFully",
+                        "Success...",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+            }
+        });
+        btnpannel.add(update);
+
+        cancel = new JButton("Cancel");
+        cancel.setFont(new Font("", 1, 20));
+        cancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent avt) {
+                UpdateContactNumber.this.dispose();
+            }
+        });
+        btnpannel.add(cancel);
+
+        add("South", btnpannel);
+        pack();
+
+    }
+}
+
+class UpdateSalary extends JFrame {
+
+    private JLabel name;
+    private JTextField nametext;
+    private JButton update;
+    private JButton cancel;
+    private JLabel title;
+
+    UpdateSalary() {
+        setSize(100, 100);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        title = new JLabel("Update Salary");
+        title.setFont(new Font("", 1, 20));
+        add("North", title);
+
+        JPanel textPannel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        name = new JLabel("Salary");
+        name.setFont(new Font("", 1, 20));
+        textPannel.add(name);
+
+        nametext = new JTextField(10);
+        nametext.setFont(new Font("", 1, 20));
+        textPannel.add(nametext);
+
+        add("Center", textPannel);
+
+        JPanel btnpannel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        update = new JButton("Update");
+        update.setFont(new Font("", 1, 20));
+        update.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                final double newname = Double.parseDouble(nametext.getText());
+                ContactControler.updateSalary(UpdateContactForm.contactList, newname);
+                JOptionPane.showMessageDialog(null, "Update Salary SuccessFully",
+                        "Success...",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+            }
+        });
+        btnpannel.add(update);
+
+        cancel = new JButton("Cancel");
+        cancel.setFont(new Font("", 1, 20));
+        cancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent avt) {
+                UpdateSalary.this.dispose();
+            }
+        });
+        btnpannel.add(cancel);
+
+        add("South", btnpannel);
+        pack();
+
+    }
+}
+
+class UpdateCompany extends JFrame {
+
+    private JLabel name;
+    private JTextField nametext;
+    private JButton update;
+    private JButton cancel;
+    private JLabel title;
+
+    UpdateCompany() {
+        setSize(100, 100);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        title = new JLabel("Update Company");
+        title.setFont(new Font("", 1, 20));
+        add("North", title);
+
+        JPanel textPannel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        name = new JLabel("Company");
+        name.setFont(new Font("", 1, 20));
+        textPannel.add(name);
+
+        nametext = new JTextField(10);
+        nametext.setFont(new Font("", 1, 20));
+        textPannel.add(nametext);
+
+        add("Center", textPannel);
+
+        JPanel btnpannel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        update = new JButton("Update");
+        update.setFont(new Font("", 1, 20));
+        update.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                final String newname = nametext.getText();
+                ContactControler.update(UpdateContactForm.contactList, newname, "company");
+                JOptionPane.showMessageDialog(null, "Update Company name SuccessFully",
+                        "Success...",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+            }
+        });
+        btnpannel.add(update);
+
+        cancel = new JButton("Cancel");
+        cancel.setFont(new Font("", 1, 20));
+        cancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent avt) {
+                UpdateCompany.this.dispose();
+            }
+        });
+        btnpannel.add(cancel);
+
+        add("South", btnpannel);
+        pack();
+
+    }
+}
+
+class UpdateBDay extends JFrame {
+
+    private JLabel name;
+    private JTextField nametext;
+    private JButton update;
+    private JButton cancel;
+    private JLabel title;
+
+    UpdateBDay() {
+
+        setSize(100, 100);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        title = new JLabel("Update BDay");
+        title.setFont(new Font("", 1, 20));
+        add("North", title);
+
+        JPanel textPannel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        name = new JLabel("BDay");
+        name.setFont(new Font("", 1, 20));
+        textPannel.add(name);
+
+        nametext = new JTextField(10);
+        nametext.setFont(new Font("", 1, 20));
+        textPannel.add(nametext);
+
+        add("Center", textPannel);
+
+        JPanel btnpannel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        update = new JButton("Update");
+        update.setFont(new Font("", 1, 20));
+        update.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                final String newname = nametext.getText();
+                ContactControler.update(UpdateContactForm.contactList, newname, "BDay");
+                JOptionPane.showMessageDialog(null, "Update BDay SuccessFully",
+                        "Success...",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+            }
+        });
+        btnpannel.add(update);
+
+        cancel = new JButton("Cancel");
+        cancel.setFont(new Font("", 1, 20));
+        cancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent avt) {
+                UpdateBDay.this.dispose();
+            }
+        });
+        btnpannel.add(cancel);
+
+        add("South", btnpannel);
+        pack();
+
+    }
+}
+
+class SubUpdateForm extends JFrame {
+    private JButton bt1;
+    private JButton bt2;
+    private JButton bt3;
+    private JButton bt4;
+    private JButton bt5;
+
+    private UpdateName updatename;
+    private UpdateContactNumber updatecontactnumber;
+    private UpdateCompany updatecontactcompany;
+    private UpdateBDay updatebday;
+    private UpdateSalary updatesalary;
+
+    SubUpdateForm() {
+        setSize(400, 300);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new GridLayout(5, 1));
+
+        bt1 = new JButton("Update Name");
+        bt1.setFont(new Font("", 1, 20));
+        bt1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                if (updatename == null) {
+                    updatename = new UpdateName();
+                }
+                updatename.setVisible(true);
+            }
+        });
+        add(bt1);
+
+        bt2 = new JButton("Update ContactNumber");
+        bt2.setFont(new Font("", 1, 20));
+        bt2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                if (updatecontactnumber == null) {
+                    updatecontactnumber = new UpdateContactNumber();
+                }
+                updatecontactnumber.setVisible(true);
+            }
+        });
+        add(bt2);
+
+        bt3 = new JButton("Update Company");
+        bt3.setFont(new Font("", 1, 20));
+        bt3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                if (updatecontactcompany == null) {
+                    updatecontactcompany = new UpdateCompany();
+                }
+                updatecontactcompany.setVisible(true);
+            }
+        });
+        add(bt3);
+
+        bt4 = new JButton("Update Salary");
+        bt4.setFont(new Font("", 1, 20));
+        bt4.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                if (updatesalary == null) {
+                    updatesalary = new UpdateSalary();
+                }
+                updatesalary.setVisible(true);
+            }
+        });
+        add(bt4);
+
+        bt5 = new JButton("Update Birthday");
+        bt5.setFont(new Font("", 1, 20));
+        bt5.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                if (updatebday == null) {
+                    updatebday = new UpdateBDay();
+                }
+                updatebday.setVisible(true);
+            }
+        });
+        add(bt5);
+
+    }
+}
+
+class UpdateContactForm extends JFrame {
+    private JLabel lblTitle;
+    private JTextField textSearch;
+    private JButton Search;
+
+    private JLabel lblContactID;
+    private JLabel lblName;
+    private JLabel lblContactNumber;
+    private JLabel lblCompany;
+    private JLabel lblSalary;
+    private JLabel lblBirthday;
+
+    private String ContactID;
+    private String Name;
+    private String ContactNumber;
+    private String Company;
+    private double Salary;
+    private String Birthday;
+
+    private JButton backtohome;
+    private JButton Delete;
+    private JButton Cancel;
+    private JButton Next;
+    public static Contact[] contactList;
+
+    private String textValue;
+    private ContactHomeForm contacthomeform;
+    private SubUpdateForm subupdateform;
+
+    UpdateContactForm() {
+        setSize(800, 600);
+        setTitle("Update contact Form");
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        JPanel titlepannel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        lblTitle = new JLabel("SEARCH CONTACT");
+        lblTitle.setFont(new Font("", 1, 30));
+        titlepannel.add(lblTitle);
+
+        add("North", titlepannel);
+
+        JPanel main = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        JPanel maingrid = new JPanel(new GridLayout(1, 1));
+
+        JPanel searchpannel = new JPanel(new FlowLayout());
+
+        textSearch = new JTextField(20);
+        textSearch.setFont(new Font("", 1, 20));
+        searchpannel.add(textSearch);
+
+        Next = new JButton("Next");
+        Next.setFont(new Font("", 1, 20));
+
+        Search = new JButton("Search");
+        Search.setFont(new Font("", 1, 20));
+        Search.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+
+                textValue = textSearch.getText();
+                contactList = ContactControler.Search(textValue);
+
+                ContactID = contactList[0].getContactID();
+                lblContactID.setText(ContactID);
+                Name = contactList[0].getName();
+                lblName.setText(Name);
+                ContactNumber = contactList[0].getNumber();
+                lblContactNumber.setText(ContactNumber);
+                Company = contactList[0].getCompany();
+                lblCompany.setText(Company);
+                Salary = contactList[0].getSalary();
+                lblSalary.setText("" + Salary);
+                Birthday = contactList[0].getBirthday();
+                lblBirthday.setText(Birthday);
+
+            }
+        });
+        searchpannel.add(Search);
+        searchpannel.add(Next);
+
+        JPanel detailsmain = new JPanel(new GridLayout(7, 1, 10, 10));
+
+        detailsmain.add(searchpannel);
+        lblContactID = new JLabel("ContactId -> " + ContactID);
+        lblContactID.setFont(new Font("", 1, 20));
+        detailsmain.add(lblContactID);
+
+        lblName = new JLabel();
+        lblName.setFont(new Font("", 1, 20));
+        detailsmain.add(lblName);
+
+        lblContactNumber = new JLabel();
+        lblContactNumber.setFont(new Font("", 1, 20));
+        detailsmain.add(lblContactNumber);
+
+        lblCompany = new JLabel();
+        lblCompany.setFont(new Font("", 1, 20));
+        detailsmain.add(lblCompany);
+
+        lblSalary = new JLabel();
+        lblSalary.setFont(new Font("", 1, 20));
+        detailsmain.add(lblSalary);
+
+        lblBirthday = new JLabel();
+        lblBirthday.setFont(new Font("", 1, 20));
+        detailsmain.add(lblBirthday);
+
+        JPanel btnpanner = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel btnpanner1 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        Delete = new JButton("Update");
+        Delete.setFont(new Font("", 1, 20));
+        Delete.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evnt) {
+                if (subupdateform == null) {
+                    subupdateform = new SubUpdateForm();
+                }
+                subupdateform.setVisible(true);
+            }
+        });
+        Cancel = new JButton("Cancel");
+        Cancel.setFont(new Font("", 1, 20));
+        Cancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent env) {
+                UpdateContactForm.this.dispose();
+            }
+        });
+
+        backtohome = new JButton("Back To Home Page");
+        backtohome.setFont(new Font("", 1, 20));
+        backtohome.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (contacthomeform == null) {
+                    contacthomeform = new ContactHomeForm();
+                }
+                contacthomeform.setVisible(true);
+            }
+        });
+
+        JPanel gr = new JPanel(new GridLayout(2, 1));
+        btnpanner1.add(Delete);
+        btnpanner1.add(Cancel);
+        btnpanner.add(backtohome);
+
+        gr.add(btnpanner1);
+        gr.add(btnpanner);
+
+        // detailsmain.add(btnpanner);
+
+        maingrid.add(detailsmain);
+
+        main.add(maingrid);
+
+        add("Center", main);
+        add("South", gr);
+
+    }
+}
+
+class ContactDBConnection {
+    public static ContactDBConnection contactDBConnection;
+    private ArrayList<Contact> contactList;
+
+    private ContactDBConnection() {
+        contactList = new ArrayList<Contact>();
+    }
+
+    public static ContactDBConnection Instance() {
+        if (contactDBConnection == null) {
+            contactDBConnection = new ContactDBConnection();
+        }
+        return contactDBConnection;
+    }
+
+    public ArrayList<Contact> getContactList() {
+        return contactList;
+    }
+}
+
+class ContactControler {
+
+    public static boolean addContact(Contact contact) {
+        ArrayList<Contact> contactList = ContactDBConnection.Instance().getContactList();
+        return contactList.add(contact);
+    }
+
+    public static boolean updateContact() {
+        return true;
+    }
+
+    public static Contact[] Search(String textValue) {
+        ArrayList<Contact> contactList = ContactDBConnection.Instance().getContactList();
+        Contact[] seArray = new Contact[0];
+        for (int i = 0; i < contactList.size(); i++) {
+            if (textValue.equals(contactList.get(i).getName())
+                    || textValue.equals(contactList.get(i).getNumber())) {
+
+                Contact[] temp = new Contact[seArray.length + 1];
+                // ----copy peverse data----
+                for (int j = 0; j < seArray.length; j++) {
+                    temp[j] = seArray[j];
+                }
+                seArray = temp;
+                seArray[seArray.length - 1] = contactList.get(i);
+
+            }
+        }
+        return seArray;
+
+    }
+
+    public static String ok() {
+        return "OK";
+    }
+
+    public static void update(Contact[] contactList, String newValue, String option) {
+
+        switch (option) {
+            case "name":
+                contactList[0].setName(newValue);
+                break;
+            case "number":
+                contactList[0].setNumber(newValue);
+                break;
+            case "company":
+                contactList[0].setCompany(newValue);
+                break;
+            case "salary":
+
+                break;
+            case "BDay":
+                contactList[0].setBirthday(newValue);
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    public static void updateSalary(Contact[] contactList, double newValue) {
+
+        contactList[0].setSalary(newValue);
+    }
+
+    private static ArrayList<Contact> CopyArr() {
+        int len = ContactDBConnection.Instance().getContactList().size();
+
+        ArrayList<Contact> tempary = new ArrayList<>();
+
+        for (int i = 0; i < len; i++) {
+            tempary.add(ContactDBConnection.Instance().getContactList().get(i));
+        }
+        return tempary;
+    }
+
+    public static ArrayList<Contact> sortName() {
+        ArrayList<Contact> sortList = CopyArr();
+
+        for (int i = 0; i < sortList.size() - 1; i++) {
+            for (int j = 0; j < sortList.size() - 1 - i; j++) {
+                if (sortList.get(i).getName().compareTo(sortList.get(i).getName()) > 0) {
+                    Contact contact = sortList.get(i);
+                    sortList.add(i, sortList.get(i + 1));
+                    sortList.add((i + 1), contact);
+
+                }
+            }
+        }
+        return sortList;
+
+    }
+
+    public static ArrayList<Contact> sortBday() {
+        ArrayList<Contact> sortList = CopyArr();
+
+        for (int i = 0; i < sortList.size() - 1; i++) {
+            for (int j = 0; j < sortList.size() - 1 - i; j++) {
+                if (sortList.get(i).getBirthday().compareTo(sortList.get(i).getBirthday()) > 0) {
+                    Contact contact = sortList.get(i);
+                    sortList.add(i, sortList.get(i + 1));
+                    sortList.add((i + 1), contact);
+
+                }
+            }
+        }
+        return sortList;
+
+    }
+
+    public static ArrayList<Contact> sortSalary() {
+        ArrayList<Contact> sortList = CopyArr();
+
+        for (int i = 0; i < sortList.size() - 1; i++) {
+            for (int j = 0; j < sortList.size() - 1 - i; j++) {
+                if (sortList.get(i).getSalary() > sortList.get(i + 1).getSalary()) {
+                    Contact contact = sortList.get(i);
+                    sortList.add(i, sortList.get(i + 1));
+                    sortList.add((i + 1), contact);
+
+                }
+            }
+        }
+        return sortList;
+
+    }
+}
+
+class ListClass extends JFrame {
+
+    private JButton sortListName;
+    private JButton sortListSalary;
+    private JButton sortListBDay;
+    private ViewContactNameForm viewcontactnameform;
+    private ViewContactBdayForm viewcontactbdayform;
+    private ViewContactSalaryForm viewsalarycontactform;
+
+    ListClass() {
+        setSize(400, 500);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new GridLayout(3, 1, 10, 10));
+
+        sortListName = new JButton("List By Name");
+        sortListName.setFont(new Font("", 1, 20));
+        sortListName.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                if (viewcontactnameform == null) {
+                    viewcontactnameform = new ViewContactNameForm();
+                }
+                viewcontactnameform.setVisible(true);
+            }
+        });
+        add(sortListName);
+
+        sortListSalary = new JButton("List By Salary");
+        sortListSalary.setFont(new Font("", 1, 20));
+        sortListSalary.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (viewsalarycontactform == null) {
+                    viewsalarycontactform = new ViewContactSalaryForm();
+                }
+                viewsalarycontactform.setVisible(true);
+            }
+        });
+        add(sortListSalary);
+
+        sortListBDay = new JButton("List By BDay");
+        sortListBDay.setFont(new Font("", 1, 20));
+        sortListBDay.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                if (viewcontactbdayform == null) {
+                    viewcontactbdayform = new ViewContactBdayForm();
+                }
+                viewcontactbdayform.setVisible(true);
+            }
+        });
+        add(sortListBDay);
+    }
+}
+
 class ContactHomeForm extends JFrame {
     static int count = 0;
-    public static ArrayList<Contact> contactList = new ArrayList<>();
+    // public static ArrayList<Contact> contactList = new ArrayList<>();
+    public static Contact arr;
     JLabel title1;
     JLabel title2;
     JLabel home;
     private AddContactForm addcontactform;
-    private ViewContactForm viewcontactform;
+    // private ViewContactForm viewcontactform;
     private SearchContactForm searchcontactform;
+    private UpdateContactForm updatecontactform;
+    private ListClass listclass;
 
     private JButton btnAddContact;
     private JButton btnUpdateContact;
@@ -574,7 +1463,7 @@ class ContactHomeForm extends JFrame {
     ContactHomeForm() {
         setSize(500, 300);
         setTitle("Contact management System");
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new GridLayout(1, 2));
 
@@ -602,6 +1491,14 @@ class ContactHomeForm extends JFrame {
 
         btnUpdateContact = new JButton("Update Contact");
         btnUpdateContact.setFont(new Font("", 1, 25));
+        btnUpdateContact.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evnt) {
+                if (updatecontactform == null) {
+                    updatecontactform = new UpdateContactForm();
+                }
+                updatecontactform.setVisible(true);
+            }
+        });
         btnPannel.add(btnUpdateContact);
 
         btnSearchContact = new JButton("Search Contact");
@@ -624,11 +1521,10 @@ class ContactHomeForm extends JFrame {
         btnViewContact.setFont(new Font("", 1, 25));
         btnViewContact.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                if (viewcontactform == null) {
-                    viewcontactform = new ViewContactForm();
+                if (listclass == null) {
+                    listclass = new ListClass();
                 }
-
-                viewcontactform.setVisible(true);
+                listclass.setVisible(true);
             }
         });
         btnPannel.add(btnViewContact);
@@ -637,6 +1533,11 @@ class ContactHomeForm extends JFrame {
 
         btnExit = new JButton("Exit");
         btnExit.setFont(new Font("", 1, 25));
+        btnExit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                ContactHomeForm.this.dispose();
+            }
+        });
         exitPanel.add(btnExit);
 
         btnPannel.add(exitPanel);
@@ -685,5 +1586,6 @@ class Ifrend {
         // new ViewContactForm().setVisible(true);
         new ContactHomeForm().setVisible(true);
         // new SearchContactForm().setVisible(true);
+        // new UpdateContactForm().setVisible(true);
     }
 }
